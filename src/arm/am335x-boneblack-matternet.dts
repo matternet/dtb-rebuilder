@@ -1,0 +1,138 @@
+/*
+* Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*/
+/dts-v1/;
+
+#include "am33xx.dtsi"
+#include "am335x-bone-common-no-capemgr.dtsi"
+
+#include <dt-bindings/board/am335x-bbw-bbb-base.h>
+
+/ {
+	model = "TI AM335x BeagleBone Black";
+	compatible = "ti,am335x-bone-black", "ti,am335x-bone", "ti,am33xx";
+};
+
+&ldo3_reg {
+	regulator-min-microvolt = <1800000>;
+	regulator-max-microvolt = <1800000>;
+	regulator-always-on;
+};
+
+&ocp {
+	/* clkout2 */
+	P9_41_pinmux {
+		status = "disabled";
+	};
+	/* mmc1 */
+	P9_92_pinmux {
+		status = "disabled";
+	};
+
+	// GPIO_44
+	P8_12_pinmux {
+		compatible = "bone-pinmux-helper";
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&P8_12_pull_down>;
+	};
+
+	// GPIO_61
+	P8_26_pinmux {
+		compatible = "bone-pinmux-helper";
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&P8_26_pull_down>;
+	};
+};
+
+&mmc1 {
+	vmmc-supply = <&vmmcsd_fixed>;
+};
+
+
+&mmc2 {
+	vmmc-supply = <&vmmcsd_fixed>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&emmc_pins>;
+	bus-width = <8>;
+	status = "okay";
+};
+
+
+&tscadc {
+	status = "okay";
+	adc {
+		ti,adc-channels = <0 1 2 3 4 5 6>;
+	};
+};
+
+/* can0: P9.19, P9.20: disable: i2c2: cape eeprom */
+/* can0: peripheral */
+#include "am335x-bone-pinmux-can0.dtsi"
+#include "am335x-peripheral-can0.dtsi"
+
+/* spi1: */
+/* P9.31 spi1_sclk */
+/* P9.29 spi1_d0 */
+/* P9.30 spi1_d1 */
+/* P9.28 spi1_cs0 */
+#include "am335x-bone-pinmux-spi1.dtsi"
+#include "am335x-peripheral-spi1.dtsi"
+
+/* can1: P9_24, P9_26 */
+/* can1: peripheral */
+#include "am335x-bone-pinmux-can1.dtsi"
+#include "am335x-peripheral-can1.dtsi"
+
+/* uart1: P9.24, P9.26 */
+// Conflicts with CAN1
+//#include "am335x-peripheral-ttyS1.dtsi"
+//#include "am335x-bone-pinmux-ttyS1.dtsi"
+
+/* uart2: P9.21, P9.22 */
+#include "am335x-peripheral-ttyS2.dtsi"
+#include "am335x-bone-pinmux-ttyS2.dtsi"
+
+/* uart4: P9.11, P9.13 */
+#include "am335x-peripheral-ttyS4.dtsi"
+#include "am335x-bone-pinmux-ttyS4.dtsi"
+
+/* uart5: P8.37, P8.38 boneblack: hdmi has to be disabled for ttyO5 */
+#include "am335x-peripheral-ttyS5.dtsi"
+#include "am335x-bone-pinmux-ttyS5.dtsi"
+
+/* i2c2: P9_17, P9_18 */
+&am33xx_pinmux {
+	i2c1_pins: pinmux_i2c1_pins {
+		pinctrl-single,pins = <
+		BONE_P9_18 (SLEWCTRL_SLOW | PIN_INPUT_PULLUP | MUX_MODE2)
+		BONE_P9_17 (SLEWCTRL_SLOW | PIN_INPUT_PULLUP | MUX_MODE2)
+		>;
+	};
+
+	P8_12_pull_down: pinmux_P8_12_pull_down {
+		pinctrl-single,pins = <BONE_P8_12 (SLEWCTRL_FAST | PIN_INPUT_PULLDOWN | MUX_MODE7)>;
+	};
+
+	P8_26_pull_down: pinmux_P8_26_pull_down {
+		pinctrl-single,pins = <BONE_P8_26 (SLEWCTRL_FAST | PIN_INPUT_PULLDOWN | MUX_MODE7)>;
+	};
+};
+
+&i2c1 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&i2c1_pins>;
+
+    status = "okay";
+    clock-frequency = <100000>;
+};
+
+/* i2c2: P9_19, P9_20 */
+// Conflicts with CAN0
+//#include "am335x-peripheral-i2c2.dtsi"
+//#include "am335x-bone-pinmux-i2c2.dtsi"
